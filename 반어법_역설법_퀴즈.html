@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>반어법 vs 역설법 퀴즈</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Noto Sans KR', 'Apple SD Gothic Neo', sans-serif;
+    background: #f0f4f8;
+    color: #222;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+  }
+  h1 {
+    font-size: 1.4rem;
+    color: #1a237e;
+    margin: 20px 0 4px;
+    text-align: center;
+  }
+  .subtitle {
+    font-size: 0.85rem;
+    color: #666;
+    margin-bottom: 24px;
+    text-align: center;
+  }
+  .card {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    padding: 28px 24px;
+    max-width: 560px;
+    width: 100%;
+  }
+  .progress-bar-wrap {
+    background: #e8eaf6;
+    border-radius: 99px;
+    height: 8px;
+    margin-bottom: 20px;
+  }
+  .progress-bar {
+    background: #3949ab;
+    height: 8px;
+    border-radius: 99px;
+    transition: width 0.3s;
+  }
+  .q-num {
+    font-size: 0.78rem;
+    color: #7986cb;
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+  .q-text {
+    font-size: 1.05rem;
+    line-height: 1.7;
+    margin-bottom: 8px;
+  }
+  .q-source {
+    font-size: 0.78rem;
+    color: #999;
+    margin-bottom: 22px;
+  }
+  .btn-group {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .btn {
+    flex: 1;
+    padding: 14px 8px;
+    border: 2px solid #c5cae9;
+    border-radius: 12px;
+    background: #fff;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s;
+    color: #3949ab;
+  }
+  .btn:hover:not(:disabled) {
+    background: #e8eaf6;
+    border-color: #3949ab;
+  }
+  .btn:disabled { cursor: default; }
+  .btn.correct {
+    background: #e8f5e9;
+    border-color: #43a047;
+    color: #2e7d32;
+  }
+  .btn.wrong {
+    background: #ffebee;
+    border-color: #e53935;
+    color: #c62828;
+  }
+  .btn.show-answer {
+    background: #e8f5e9;
+    border-color: #43a047;
+    color: #2e7d32;
+  }
+  .explain-box {
+    display: none;
+    background: #f3f4ff;
+    border-left: 4px solid #3949ab;
+    border-radius: 8px;
+    padding: 14px 16px;
+    font-size: 0.88rem;
+    line-height: 1.7;
+    color: #333;
+    margin-bottom: 16px;
+  }
+  .explain-box.show { display: block; }
+  .explain-box .label {
+    font-weight: 700;
+    color: #3949ab;
+    margin-bottom: 6px;
+    font-size: 0.82rem;
+  }
+  .next-btn {
+    width: 100%;
+    padding: 14px;
+    background: #3949ab;
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: none;
+    transition: background 0.15s;
+  }
+  .next-btn:hover { background: #283593; }
+  .result-card {
+    display: none;
+    text-align: center;
+  }
+  .result-card h2 {
+    font-size: 1.5rem;
+    color: #1a237e;
+    margin-bottom: 12px;
+  }
+  .score-big {
+    font-size: 3.5rem;
+    font-weight: 900;
+    color: #3949ab;
+    line-height: 1;
+    margin: 16px 0 8px;
+  }
+  .score-sub {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 28px;
+  }
+  .msg {
+    font-size: 1.05rem;
+    line-height: 1.7;
+    color: #333;
+    margin-bottom: 28px;
+  }
+  .restart-btn {
+    width: 100%;
+    padding: 14px;
+    background: #3949ab;
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .restart-btn:hover { background: #283593; }
+  .concept-box {
+    max-width: 560px;
+    width: 100%;
+    margin-bottom: 20px;
+    display: flex;
+    gap: 12px;
+  }
+  .concept-item {
+    flex: 1;
+    background: #fff;
+    border-radius: 12px;
+    padding: 14px 12px;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.07);
+    font-size: 0.82rem;
+    line-height: 1.6;
+  }
+  .concept-item b {
+    display: block;
+    font-size: 0.92rem;
+    color: #3949ab;
+    margin-bottom: 4px;
+  }
+  .badge-correct { color: #43a047; }
+  .badge-wrong { color: #e53935; }
+</style>
+</head>
+<body>
+
+<h1>반어법 vs 역설법 퀴즈</h1>
+<p class="subtitle">중2 국어 문학 | 표현법 구분 연습</p>
+
+<div class="concept-box">
+  <div class="concept-item">
+    <b>반어법 (反語法)</b>
+    말하는 내용과 <strong>속뜻이 반대</strong>인 표현.<br>
+    비꼬거나 강조할 때 사용.
+  </div>
+  <div class="concept-item">
+    <b>역설법 (逆說法)</b>
+    겉으로는 <strong>모순처럼 보이지만</strong> 그 안에 깊은 진리가 담긴 표현.
+  </div>
+</div>
+
+<div class="card" id="quiz-area">
+  <div class="progress-bar-wrap">
+    <div class="progress-bar" id="progress-bar"></div>
+  </div>
+  <div class="q-num" id="q-num"></div>
+  <div class="q-text" id="q-text"></div>
+  <div class="q-source" id="q-source" style="display:none"></div>
+  <div class="btn-group">
+    <button class="btn" id="btn-a" onclick="answer('반어법')">반어법</button>
+    <button class="btn" id="btn-b" onclick="answer('역설법')">역설법</button>
+  </div>
+  <div class="explain-box" id="explain-box">
+    <div class="label" id="explain-label"></div>
+    <div id="explain-text"></div>
+  </div>
+  <button class="next-btn" id="next-btn" onclick="nextQ()">다음 문제 →</button>
+
+  <div class="result-card" id="result-card">
+    <h2>퀴즈 완료!</h2>
+    <div class="score-big" id="score-big"></div>
+    <div class="score-sub" id="score-sub"></div>
+    <div class="msg" id="result-msg"></div>
+    <button class="restart-btn" onclick="restart()">다시 풀기</button>
+  </div>
+</div>
+
+<script>
+const questions = [
+  {
+    text: '"죽어도 아니 눈물 흘리오리다"',
+    source: '김소월, 「진달래꽃」',
+    answer: '반어법',
+    explain: '실제로는 눈물을 흘릴 만큼 슬프지만, "눈물을 흘리지 않겠다"고 표현해 속뜻(슬픔)과 말이 반대입니다. 이것이 <b>반어법</b>입니다.'
+  },
+  {
+    text: '"이것은 소리 없는 아우성"',
+    source: '유치환, 「깃발」',
+    answer: '역설법',
+    explain: '"소리 없는"과 "아우성"은 논리적으로 모순이지만, 펄럭이는 깃발의 간절한 염원을 담은 표현입니다. 모순 속에 진리가 담긴 <b>역설법</b>입니다.'
+  },
+  {
+    text: '"찬란한 슬픔의 봄"',
+    source: '김영랑, 「모란이 피기까지는」',
+    answer: '역설법',
+    explain: '"찬란한"(밝고 아름다운)과 "슬픔"(어둡고 슬픈)은 서로 모순되지만, 봄을 기다리는 안타까운 기쁨을 담아냅니다. <b>역설법</b>입니다.'
+  },
+  {
+    text: '"님은 갔지마는 나는 님을 보내지 아니하였습니다"',
+    source: '한용운, 「님의 침묵」',
+    answer: '역설법',
+    explain: '"갔다"와 "보내지 않았다"는 논리적으로 모순이지만, 마음속에서는 아직 놓지 못했다는 진실을 담고 있습니다. <b>역설법</b>입니다.'
+  },
+  {
+    text: '"나 보기가 역겨워 가실 때에는 말없이 고이 보내 드리오리다"',
+    source: '김소월, 「진달래꽃」',
+    answer: '반어법',
+    explain: '실제로는 보내기 싫고 슬프지만, "말없이 보내겠다"고 표현해 속마음과 말이 반대입니다. <b>반어법</b>입니다.'
+  },
+  {
+    text: '"그래, 참 잘도 한다"',
+    source: '일상 표현 (비꼬는 말)',
+    answer: '반어법',
+    explain: '실제로 잘못했는데 "잘 한다"고 말하는 것으로, 속뜻과 표현이 반대인 <b>반어법</b>입니다.'
+  },
+  {
+    text: '"어둠은 빛을 이길 수 없다"',
+    source: '일반적 역설 표현',
+    answer: '역설법',
+    explain: '어둠과 빛은 반대되는 개념이지만, 이 문장은 희망이라는 진리를 담고 있습니다. <b>역설법</b>입니다.'
+  },
+  {
+    text: '"만나면 이별이요, 이별하면 또 만나리"',
+    source: '불교적 역설 표현',
+    answer: '역설법',
+    explain: '"만남"과 "이별"은 반대지만, 삶의 순환이라는 깊은 진리를 담고 있습니다. 겉으로는 모순이나 진실을 담은 <b>역설법</b>입니다.'
+  },
+  {
+    text: '"바보같이 예쁘다니까"',
+    source: '일상 표현 (사랑스러운 비꼼)',
+    answer: '반어법',
+    explain: '실제로 예쁘다고 생각하면서 "바보같이"라고 표현하거나, 또는 반대로 "예쁘다"고 비꼬는 말입니다. 속뜻과 반대로 말하는 <b>반어법</b>입니다.'
+  },
+  {
+    text: '"사랑은 아프다"',
+    source: '일반 표현',
+    answer: '역설법',
+    explain: '사랑은 기쁜 감정이지만 "아프다"는 모순처럼 보이는 표현 속에, 사랑의 진짜 감정이 담겨 있습니다. <b>역설법</b>입니다.'
+  },
+  {
+    text: '"그때에 내 말이 잊었노라"',
+    source: '김소월, 「먼 후일」',
+    answer: '반어법',
+    explain: '실제로는 잊지 못하면서도 "잊었다"고 말하는 표현으로, 속뜻과 말이 반대인 <b>반어법</b>입니다. 떠난 임을 잊을 수 없다는 슬픔을 역설적으로 드러냅니다.'
+  },
+  {
+    text: '"겨울은 강철로 된 무지갠가 보다"',
+    source: '이육사, 「절정」',
+    answer: '역설법',
+    explain: '"강철"(차갑고 단단한)과 "무지개"(부드럽고 아름다운)는 서로 모순이지만, 극한의 고통 속에서도 희망을 잃지 않는다는 진리를 담은 <b>역설법</b>입니다.'
+  },
+  {
+    text: '"잘났어, 정말 잘났어"',
+    source: '일상 비꼬는 표현',
+    answer: '반어법',
+    explain: '실제로는 못난 행동을 했는데 "잘났다"고 말하는, 속뜻과 표현이 반대인 <b>반어법</b>입니다.'
+  },
+  {
+    text: '"우리는 만날 때에 떠날 것을 염려하는 것과 같이 / 떠날 때에 다시 만날 것을 믿습니다"',
+    source: '한용운, 「님의 침묵」',
+    answer: '역설법',
+    explain: '만남과 이별이 함께 존재한다는 모순된 표현 속에, 삶의 순환이라는 진리가 담겨 있습니다. <b>역설법</b>입니다.'
+  },
+  {
+    text: '"참, 고맙기도 하지"',
+    source: '일상 비꼬는 표현',
+    answer: '반어법',
+    explain: '전혀 고맙지 않은 상황에서 "고맙다"고 말하는, 속뜻과 표현이 반대인 <b>반어법</b>입니다.'
+  },
+  {
+    text: '"아픔 없이 기쁨도 없다"',
+    source: '일반 역설 표현',
+    answer: '역설법',
+    explain: '아픔과 기쁨은 반대되는 감정이지만, 둘이 함께 존재한다는 삶의 진리를 담고 있습니다. <b>역설법</b>입니다.'
+  },
+  {
+    text: '"오, 얼마나 사랑스러운 행동인지"',
+    source: '일상 비꼬는 표현',
+    answer: '반어법',
+    explain: '밉살스럽거나 불쾌한 행동에 대해 "사랑스럽다"고 표현하는, 속뜻과 반대인 <b>반어법</b>입니다.'
+  },
+  {
+    text: '"텅 빈 충만"',
+    source: '시적 역설 표현',
+    answer: '역설법',
+    explain: '"텅 빔"과 "충만"은 서로 모순이지만, 마음을 비울 때 오히려 더 충만해진다는 진리를 담은 <b>역설법</b>입니다.'
+  },
+  {
+    text: '"역시 믿을 만 하더라"',
+    source: '일상 비꼬는 표현 (배신당한 후)',
+    answer: '반어법',
+    explain: '믿음이 배신당한 상황에서 "믿을 만하다"고 말하는, 속뜻과 반대인 <b>반어법</b>입니다.'
+  },
+  {
+    text: '"가장 어두운 밤이 새벽 직전이다"',
+    source: '일반 역설 표현',
+    answer: '역설법',
+    explain: '어둠이 가장 짙을 때 빛이 온다는, 겉으로는 모순처럼 보이지만 희망의 진리를 담은 <b>역설법</b>입니다.'
+  }
+];
+
+let order = [];
+let current = 0;
+let score = 0;
+let answered = false;
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function start() {
+  order = shuffle(questions.map((_, i) => i));
+  current = 0;
+  score = 0;
+  document.getElementById('result-card').style.display = 'none';
+  document.getElementById('q-num').style.display = '';
+  document.getElementById('q-text').style.display = '';
+  document.getElementById('q-source').style.display = '';
+  document.getElementById('btn-a').style.display = '';
+  document.getElementById('btn-b').style.display = '';
+  showQ();
+}
+
+function showQ() {
+  answered = false;
+  const q = questions[order[current]];
+  const total = questions.length;
+  document.getElementById('q-num').textContent = `${current + 1} / ${total}`;
+  document.getElementById('q-text').textContent = q.text;
+  document.getElementById('q-source').textContent = '— ' + q.source;
+  document.getElementById('explain-box').classList.remove('show');
+  document.getElementById('next-btn').style.display = 'none';
+  const btnA = document.getElementById('btn-a');
+  const btnB = document.getElementById('btn-b');
+  btnA.className = 'btn';
+  btnB.className = 'btn';
+  btnA.disabled = false;
+  btnB.disabled = false;
+  document.getElementById('progress-bar').style.width = ((current / total) * 100) + '%';
+}
+
+function answer(choice) {
+  if (answered) return;
+  answered = true;
+  const q = questions[order[current]];
+  const correct = q.answer === choice;
+  if (correct) score++;
+
+  const btnA = document.getElementById('btn-a');
+  const btnB = document.getElementById('btn-b');
+  btnA.disabled = true;
+  btnB.disabled = true;
+
+  if (choice === '반어법') {
+    btnA.className = correct ? 'btn correct' : 'btn wrong';
+  } else {
+    btnB.className = correct ? 'btn correct' : 'btn wrong';
+  }
+
+  if (q.answer === '반어법') btnA.className = 'btn show-answer';
+  else btnB.className = 'btn show-answer';
+
+  const label = document.getElementById('explain-label');
+  label.innerHTML = correct
+    ? '<span class="badge-correct">✔ 정답!</span> — ' + q.answer
+    : '<span class="badge-wrong">✘ 오답!</span> 정답은 ' + q.answer;
+
+  document.getElementById('explain-text').innerHTML = q.explain + ' <span style="color:#999;font-size:0.82rem;">— ' + q.source + '</span>';
+  document.getElementById('explain-box').classList.add('show');
+
+  const nextBtn = document.getElementById('next-btn');
+  nextBtn.style.display = 'block';
+  if (current === questions.length - 1) {
+    nextBtn.textContent = '결과 보기 →';
+  } else {
+    nextBtn.textContent = '다음 문제 →';
+  }
+}
+
+function nextQ() {
+  current++;
+  if (current >= questions.length) {
+    showResult();
+  } else {
+    showQ();
+  }
+}
+
+function showResult() {
+  const total = questions.length;
+  document.getElementById('q-num').style.display = 'none';
+  document.getElementById('q-text').style.display = 'none';
+  document.getElementById('q-source').style.display = 'none';
+  document.getElementById('btn-a').style.display = 'none';
+  document.getElementById('btn-b').style.display = 'none';
+  document.getElementById('explain-box').classList.remove('show');
+  document.getElementById('next-btn').style.display = 'none';
+  document.getElementById('progress-bar').style.width = '100%';
+
+  document.getElementById('score-big').textContent = score + ' / ' + total;
+  document.getElementById('score-sub').textContent = '총 ' + total + '문제 중 ' + score + '개 맞혔어요.';
+
+  let msg = '';
+  const pct = score / total;
+  if (pct === 1) msg = '완벽해요! 반어법과 역설법을 완전히 구분할 수 있어요. 👏';
+  else if (pct >= 0.8) msg = '잘 했어요! 거의 다 맞혔네요. 틀린 문제를 한 번 더 확인해봐요.';
+  else if (pct >= 0.6) msg = '절반 이상 맞혔어요. 개념 정리 후 다시 도전해봐요!';
+  else msg = '반어법과 역설법의 차이를 다시 살펴보고 도전해봐요. 할 수 있어요!';
+
+  document.getElementById('result-msg').textContent = msg;
+  document.getElementById('result-card').style.display = 'block';
+}
+
+function restart() {
+  start();
+}
+
+start();
+</script>
+</body>
+</html>
